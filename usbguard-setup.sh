@@ -18,23 +18,29 @@ trap 'echo -e $TextReset;exit' 1 2 3 15
 
 clear
 
+echo -e $FormatTextSyntax "
+   Installing usbguard ...
+
+"
+$FormatRunCommand
 yum install -y usbguard
 
 echo -e "
    To create the initial rule set, enter the following command as root:
-
+"
+echo -e $FormatTextCommands "
 	# usbguard generate-policy > /etc/usbguard/rules.conf
 
 "
+$FormatRunCommand
 usbguard generate-policy > /etc/usbguard/rules.conf
 cat /etc/usbguard/rules.conf
 
 echo -e $FormatTextPause && read -p "<-- Press any key to continue -->" NULL
 
-echo -e "
-   Start the service
+echo -e $FormatTextSyntax "
+   Start the usbguard service
 
 "
 systemctl start usbguard
 systemctl status usbguard
-
