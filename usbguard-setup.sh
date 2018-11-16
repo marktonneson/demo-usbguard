@@ -24,8 +24,14 @@ echo -e $FormatTextSyntax "
 "
 $FormatRunCommand
 yum install -y usbguard
+# Create local users for later
+useradd usbuser
+useradd nousbuser
+# This is obviously a terrible security practice, never do this in real life!
+echo "usbguard" | passwd --stdin usbuser
+echo "rejected" | passwd --stdin nousbuser
 
-echo -e "
+echo -e $FormatTextSyntax "
    To create the initial rule set, enter the following command as root:
 "
 echo -e $FormatTextCommands "

@@ -51,16 +51,18 @@ echo -e $FormatTextSyntax "
                list USB devices, listen to exception events, and list USB authorization policy.
 "
 echo -e $FormatTextCommands "
-	# usbguard add-user -g usbguard --devices=modify,list,listen --policy=list --exceptions=listen
+	Modify /etc/usbguard/usbguard-daemon.conf, add group (usbguard in this example) to IPCAllowedGroups
+
+  IPCAllowedGroups=usbguard
 "
 echo -e $FormatTextPause && read -p "<-- Press any key to continue -->" NULL
 
 $FormatRunCommand
 groupadd usbguard
-id mark
-usermod -G usbguard mark
-id mark
-usbguard add-user -g usbguard --devices=modify,list,listen --policy=list --exceptions=listen
+id usbuser
+usermod -G usbguard usbuser
+id usbuser
+sed -i s/IPCAllowedGroups=/IPCAllowedGroups=usbguard/ /etc/usbguard/usbguard-daemon.conf
 
 echo -e $FormatTextSyntax "
    Step Three: Install the new rules
@@ -74,6 +76,5 @@ echo -e $FormatTextPause && read -p "<-- Press any key to continue -->" NULL
 
 $FormatRunCommand
 usbguard generate-policy > /root/rules.conf
-echo -e "allow with-interface equals { 08:*:* }\nreject with-interface all-of { 08:*:* 03:00:* }\nreject with-interface all-of { 08:*:* 03:01:* }\nreject with-interface all-of { 08:*:* e0:*:* }\nreject with-interface all-of { 08:*:* 02:*:* }">>/root/rules.conf
-install -m 0600 -o root -g root rules.conf /etc/usbguard/rules.conf
+install -m 0600 -o root -g root /root/rules.conf /etc/usbguard/rules.conf
 systemctl restart usbguard

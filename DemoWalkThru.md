@@ -1,42 +1,63 @@
-# USBGuard
-### Demo walkthru:
-* Run usbguard-setup.sh = Install, generate policy, view policy, start service
+# USBGuard Demo WalkThru
+
+## Requirements
+* Minimum VM: 1vCPU x 1GB mem, running RHEL 7
+* If using VM, make sure USB passthrough is enabled
+* USB stick for testing
+
+## WalkThru:
+* Setup via usbguard-setup.sh
+  * Installs usbguard package
+	* Generates initial policy and displays policy
+	* Starts service
+	* Creates local users for testing
+  * Will need root or sudo to execute
 * List devices
+```
+# usbguard list-devices
+```
 * Plug-in new device
-* Enable new device, mount device
-* Reject new device, check mount
-* Examine usbguard-daemon.conf file, Whitelist and Blacklist options
-* Run usbguard-example.sh, test user, test mount new device
-
-### Command Reference
-To install the usbguard package, enter the following command as root:
-	
-```# yum install usbguard```
-
-To create the initial rule set, enter the following command as root:
-
-```# usbguard generate-policy > /etc/usbguard/rules.conf```
-
-Note: To customize the USBGuard rule set, edit the /etc/usbguard/rules.conf file. See the usbguard-rules.conf(5) man page for more information.
-
-Start and enable the service:
-
-```# systemctl enable usbguard && systemctl start usbguard```
-
-To list all USB devices recognized by USBGuard, enter the following command as root:
-
-```# usbguard list-devices```
-
-To authorize a device to interact with the system, use the allow-device option:
-
-```# usbguard allow-device [N]```
-
-To deauthorize and remove a device from the system, use the reject-device option. 
-
-```# usbguard reject-device [N]```
-
-To just deauthorize a device, use the usbguard command with the block-device option:
-
-```# usbguard block-device [N]```
-
-[Reference Documentation](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/sec-using-usbguard)
+  * Run above command again, notice that the new device is blocked
+* Enable new device, replace [device number] with the correct number from the list-devices output
+  * Mount device (example below, edit mount command to match your device and environment)
+```
+# usbguard allow-device [device number]
+# mount /dev/sda1 /mnt
+```
+* Block new device, check mount (it should be gone)
+```
+# usbguard block-device [device number]
+# ls /mnt
+```
+* Examine /etc/usbguard/usbguard-daemon.conf file
+  * It is well documented, note the default policies
+* Run usbguard-example.sh
+  * It will step thru creating custom rules
+  * Also modifies config to allow non-root users to use usbguard
+* Test non-root user
+  * Reinstate original configuration
+	```
+	# usbguard generate-policy > /etc/usbguard/rules.conf
+	# systemctl restart usbguard
+	```
+  * Login (or su) as usbuser
+	* List devices
+	```
+	$ usbguard list-devices
+	```
+	* Plug in USB and as non-root user allow that device
+	```
+	$ usbguard allow-device [device number]
+	```
+* Extra Credit: Test non-root user w/o usbguard privileges
+  * Login (or su) as nousbuser
+	* List devices (should fail)
+	```
+	$ usbguard list-devices
+	```
+	* Plug in USB and as non-root user allow that device (should fail)
+	```
+	$ usbguard allow-device [device number]
+	```
+* Cleanup via usbguard-cleanup.sh
+  * Optional if demo VM is disposable
