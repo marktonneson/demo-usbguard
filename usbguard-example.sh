@@ -28,21 +28,20 @@ echo -e $FormatTextSyntax "
 echo -e $FormatTextPause && read -p "<-- Press any key to continue -->" NULL
 
 echo -e $FormatTextSyntax "
-   Step One: Create /root/rules.conf with this content which allows USB flash disks
-             and explicitly rejects devices with an additional and suspicious interface.
-
+   Step One: Create /root/new-rule.conf with this content which blocks any device that
+             is not just a mass storage device. Devices with a hidden keyboard interface
+             in a USB flash disk are blocked. Only devices with a single mass storage
+             interface are allowed to interact with the operating system.
+"
+echo -e $FormatTextCommands "
 	allow with-interface equals { 08:*:* }
-	reject with-interface all-of { 08:*:* 03:00:* }
-	reject with-interface all-of { 08:*:* 03:01:* }
-	reject with-interface all-of { 08:*:* e0:*:* }
-	reject with-interface all-of { 08:*:* 02:*:* }
 "
 
 echo -e $FormatTextPause && read -p "<-- Press any key to continue -->" NULL
 
 $FormatRunCommand
-echo -e "allow with-interface equals { 08:*:* }\nreject with-interface all-of { 08:*:* 03:00:* }\nreject with-interface all-of { 08:*:* 03:01:* }\nreject with-interface all-of { 08:*:* e0:*:* }\nreject with-interface all-of { 08:*:* 02:*:* }">/root/rules.conf
-cat /root/rules.conf
+echo -e "allow with-interface equals { 08:*:* }">/root/new-rule.conf
+cat /root/new-rule.conf
 
 echo -e $FormatTextPause && read -p "<-- Press any key to continue -->" NULL
 
@@ -62,13 +61,14 @@ groupadd usbguard
 id usbuser
 usermod -G usbguard usbuser
 id usbuser
-sed -i s/IPCAllowedGroups=/IPCAllowedGroups=usbguard/ /etc/usbguard/usbguard-daemon.conf
+sed -i s/IPCAllowedGroups=$/IPCAllowedGroups=usbguard/ /etc/usbguard/usbguard-daemon.conf
 
 echo -e $FormatTextSyntax "
    Step Three: Install the new rules
 "
 echo -e $FormatTextCommands "
-	# usbguard generate-policy > /root/rules.conf
+  # usbguard generate-policy > /root/rules.conf
+  # cat /root/new-rule.conf >> /root/rules.conf
 	# install -m 0600 -o root -g root /root/rules.conf /etc/usbguard/rules.conf
 	# systemctl restart usbguard
 "
@@ -76,5 +76,16 @@ echo -e $FormatTextPause && read -p "<-- Press any key to continue -->" NULL
 
 $FormatRunCommand
 usbguard generate-policy > /root/rules.conf
+cat /root/new-rule.conf >> /root/rules.conf
 install -m 0600 -o root -g root /root/rules.conf /etc/usbguard/rules.conf
 systemctl restart usbguard
+
+echo -e $FormatTextCommands "
+  View updated rules via:
+
+  # usbguard list-rules
+"
+echo -e $FormatTextPause && read -p "<-- Press any key to continue -->" NULL
+
+$FormatRunCommand
+usbguard list-rules

@@ -5,6 +5,7 @@ Cleaning up ...
 "
 yum remove -y usbguard
 rm -f /root/rules.conf
+rm -f /root/new-rule.conf
 rm -rf /etc/usbguard
 rm -rf /var/log/usbguard
 groupdel usbguard

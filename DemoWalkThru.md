@@ -16,18 +16,26 @@
 ```
 # usbguard list-devices
 ```
-* Plug-in new device
+* Plug-in new device (and redirect it if using a VM)
   * Run above command again, notice that the new device is blocked
 * Enable new device, replace [device number] with the correct number from the list-devices output
-  * Mount device (example below, edit mount command to match your device and environment)
 ```
 # usbguard allow-device [device number]
+```
+* Mount device (example below, edit mount command to match your device and environment)
+```
+# lsblk
 # mount /dev/sda1 /mnt
+# ls -l /mnt
 ```
 * Block new device, check mount (it should be gone)
 ```
 # usbguard block-device [device number]
-# ls /mnt
+# ls -l /mnt
+```
+* Extra Credit: plug in a different USB drive (and redirect it if using a VM).  It should be blocked by the default policy.
+```
+# usbguard list-devices
 ```
 * Examine /etc/usbguard/usbguard-daemon.conf file
   * It is well documented, note the default policies
@@ -35,6 +43,7 @@
   * It will step thru creating custom rules
   * Also modifies config to allow non-root users to use usbguard
 * Test non-root user
+  * Remove any USB device from previous steps
   * Reinstate original configuration
 	```
 	# usbguard generate-policy > /etc/usbguard/rules.conf
@@ -45,9 +54,10 @@
 	```
 	$ usbguard list-devices
 	```
-	* Plug in USB and as non-root user allow that device
+	* Plug in USB (and redirect it if using a VM) and as non-root user allow that device
 	```
 	$ usbguard allow-device [device number]
+  $ usbguard list-devices
 	```
 * Extra Credit: Test non-root user w/o usbguard privileges
   * Login (or su) as nousbuser
