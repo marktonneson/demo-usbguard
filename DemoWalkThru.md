@@ -57,7 +57,7 @@
 	* Plug in USB (and redirect it if using a VM) and as non-root user allow that device
 	```
 	$ usbguard allow-device [device number]
-  $ usbguard list-devices
+  	$ usbguard list-devices
 	```
 * Extra Credit: Test non-root user w/o usbguard privileges
   * Login (or su) as nousbuser
