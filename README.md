@@ -41,4 +41,4 @@ To just deauthorize a device, use the usbguard command with the block-device opt
       # usbguard block-device [device num]
 ```
 ### References and Resources
-* [Red Hat Documentation](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/sec-using-usbguard)
+* [Red Hat Documentation - RHEL 7](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/sec-using-usbguard)

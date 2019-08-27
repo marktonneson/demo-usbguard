@@ -1,7 +1,7 @@
 ## USBGuard Demo WalkThru
 
 ### Requirements
-* Minimum VM: 1vCPU x 1GB mem, running RHEL 7
+* Minimum VM: 1vCPU x 1GB mem, running RHEL 7.latest or RHEL 8.latest
 * If using VM, make sure USB passthrough is enabled
 * USB stick for testing
 
